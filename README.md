@@ -1,4 +1,4 @@
-# Simple python script to deliver news using calibre.
+# Simple python script to deliver news using calibre
 
 ## Prerequisites
 
@@ -30,4 +30,15 @@ Or
 $ python2 process-recipe.py lemonde
 Sending lemonde.mobi over email
 ```
+
+## Tested recipes
+
+As of 3 Sep 21, the following recipes work fine:
+
+- Le Monde
+
+## TODO
+
+- More recipes.
+- Separate credential file and gitignore it.
 
