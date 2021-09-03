@@ -39,6 +39,7 @@ As of 3 Sep 21, the following recipes work fine:
 
 ## TODO
 
+- Re-structure title for better organization on the device.
 - More recipes.
 - Separate credential file and gitignore it.
 
