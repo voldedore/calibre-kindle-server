@@ -31,15 +31,6 @@ $ python2 process-recipe.py lemonde
 Sending lemonde.mobi over email
 ```
 
-## Tested recipes
-
-As of 3 Sep 21, the following recipes work fine:
-
-- Le Monde
-
 ## TODO
 
-- Re-structure title for better organization on the device.
-- More recipes.
 - Separate credential file and gitignore it.
-
