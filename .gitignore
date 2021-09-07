@@ -1,0 +1,4 @@
+*.pyc
+secret.py
+ebooks/
+logs/
