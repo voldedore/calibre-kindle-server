@@ -7,16 +7,7 @@ import sys
 import os
 import filecmp
 import json
-
-
-# Deliver to this address
-kindle_address = "chrish_71@kindle.com"
-
-# SMTP account settings for outgoing mail
-smtp_server = 'smtp.gmail.com'
-smtp_port = '587'
-smtp_username = 'calibre.kindle.server@gmail.com'
-smtp_password = 'password_in_plaintext_please_dont_steal_my_gmail_account_git_users'
+from secret import *
 
 # Path to directories
 log_dir = 'logs'

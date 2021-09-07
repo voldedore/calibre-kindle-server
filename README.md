@@ -33,4 +33,4 @@ Sending lemonde.mobi over email
 
 ## TODO
 
-- Separate credential file and gitignore it.
+- For now, no more todo.
