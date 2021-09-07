@@ -1,0 +1,120 @@
+#!/usr/bin/env python
+# vim:fileencoding=utf-8
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+__license__ = 'GPL v3'
+__copyright__ = '2021'
+
+'''
+tuoitre.vn
+'''
+
+from calibre.web.feeds.news import BasicNewsRecipe
+import re
+
+
+def classes(classes):
+    q = frozenset(classes.split(' '))
+    return dict(attrs={
+        'class': lambda x: x and frozenset(x.split()).intersection(q)})
+
+
+class TuoiTre(BasicNewsRecipe):
+    title = 'Tuoi Tre'
+    __author__ = 'voldedore'
+    description = 'RSS of TuoiTre'
+    publisher = 'Tuoi Tre Online'
+    publication_type = 'newspaper'
+    needs_subscription = 'optional'
+    language = 'vi'
+
+    oldest_article = 1
+    max_articles_per_feed = 15
+    scale_news_images_to_device = True
+    compress_news_images = True
+    no_stylesheets = True
+    remove_empty_feeds = True
+    ignore_duplicate_articles = {'title', 'url'}
+
+    conversion_options = {
+        'publisher': publisher
+    }
+
+    masthead_url = 'https://statictuoitre.mediacdn.vn/web_images/tto_default_avatar.png'
+    cover_url = 'https://statictuoitre.mediacdn.vn/web_images/tto_default_avatar.png'
+
+    feeds = [
+        ('Trang chủ', 'https://tuoitre.vn/rss/tin-moi-nhat.rss'),
+        ('Thế giới', 'https://tuoitre.vn/rss/the-gioi.rss'),
+        ('Kinh doanh', 'https://tuoitre.vn/rss/kinh-doanh.rss'),
+        ('Xe', 'https://tuoitre.vn/rss/xe.rss'),
+        ('Văn hóa', 'https://tuoitre.vn/rss/van-hoa.rss'),
+        ('Thể thao', 'https://tuoitre.vn/rss/the-thao.rss'),
+        ('Khoa học', 'https://tuoitre.vn/rss/khoa-hoc.rss'),
+        ('Giả thật', 'https://tuoitre.vn/rss/gia-that.rss'),
+        ('Bạn đọc làm báo', 'https://tuoitre.vn/rss/ban-doc-lam-bao.rss'),
+        ('Thời sự', 'https://tuoitre.vn/rss/thoi-su.rss'),
+        ('Pháp luật', 'https://tuoitre.vn/rss/phap-luat.rss'),
+        ('Công nghệ', 'https://tuoitre.vn/rss/nhip-song-so.rss'),
+        ('Nhịp sống trẻ', 'https://tuoitre.vn/rss/nhip-song-tre.rss'),
+        ('Giải trí', 'https://tuoitre.vn/rss/giai-tri.rss'),
+        ('Giáo dục', 'https://tuoitre.vn/rss/giao-duc.rss'),
+        ('Sức khỏe', 'https://tuoitre.vn/rss/suc-khoe.rss'),
+        ('Thư giãn', 'https://tuoitre.vn/rss/thu-gian.rss'),
+        ('Du lịch', 'https://tuoitre.vn/rss/du-lich.rss')
+    ]
+
+    keep_only_tags = [
+	dict(name='h1', attrs={'class': ['article-title']}),
+	dict(name='div', attrs={'class': ['date-time']}),
+	dict(id=['mainContentDetail'])
+    ]
+
+    remove_tags = [
+	dict(id=['sticky-box']),
+        classes('relate-container'),
+	dict(name='div', attrs={'type': ['RelatedOneNews']})
+    ]
+
+    remove_attributes = [
+        'data-sizes', 'height', 'sizes', 'width'
+    ]
+
+    preprocess_regexps = [
+        # insert space between author name and description
+        (re.compile(r'(<span class="[^"]*author__desc[^>]*>)([^<]*</span>)',
+                    re.IGNORECASE), lambda match: match.group(1) + ' ' + match.group(2)),
+        # insert " | " between article type and description
+        (re.compile(r'(<span class="[^"]*article__kicker[^>]*>[^<]*)(</span>)',
+                    re.IGNORECASE), lambda match: match.group(1) + ' | ' + match.group(2))
+    ]
+
+    extra_css = '''
+        h2 { font-size: 1em; }
+        h3 { font-size: 1em; }
+        .article__desc { font-weight: bold; }
+        .article__fact { font-weight: bold; text-transform: uppercase; }
+        .article__kicker { text-transform: uppercase; }
+        .article__legend { font-size: 0.6em; margin-bottom: 1em; }
+        .article__title { margin-top: 0em; }
+    '''
+
+
+    def postprocess_html(self, soup, first_fetch):
+        # remove local hyperlinks
+        for a in soup.find_all('a', {'href': True}):
+            if '.tuoitre.vn/' in a['href']:
+                a.replace_with(self.tag_to_string(a))
+        # clean up header
+        for ul in soup.find_all('ul', {'class': 'breadcrumb'}):
+            div = soup.new_tag('div')
+            category = ''
+            for li in ul.find_all('li', {'class': True}):
+                category += self.tag_to_string(li).strip().upper() + ' - '
+                div.string = category[:-3]
+            ul.replace_with(div)
+        return soup
+
+
+calibre_most_common_ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+
